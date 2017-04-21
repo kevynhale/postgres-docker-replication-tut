@@ -25,9 +25,6 @@ ENV LOCALE en_US.UTF-8
 # Initial default user/pass and schema
 ENV USER postgres
 ENV PASSWORD postgres
-ENV SCHEMA postgres
-ENV POSTGIS false
-ENV ENCODING UTF-8
 
 RUN echo "listen_addresses='*'" >> /etc/postgresql/9.4/main/postgresql.conf \
   && echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.4/main/pg_hba.conf

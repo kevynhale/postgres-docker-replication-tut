@@ -21,19 +21,11 @@ create_user () {
     # We sleep here for 2 seconds to allow clean output, and speration from postgres startup messages
     sleep 2
     echo "Below are your configured options."
-    echo -e "================\nUSER: $USER\nPASSWORD: $PASSWORD\nSCHEMA: $SCHEMA\nENCODING: $ENCODING\nPOSTGIS: $POSTGIS\n================"
-    # Ensure template1 gets updated with proper encoding
-    psql -c "UPDATE pg_database SET datistemplate = FALSE WHERE datname = 'template1';"
-    psql -c "DROP DATABASE template1;"
-    psql -c "CREATE DATABASE template1 WITH TEMPLATE = template0 ENCODING = '$ENCODING';"
-    psql -c "UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'template1';"
-    psql -d 'template1' -c "VACUUM FREEZE;"
-    psql -c "CREATE TABLE distributors (did integer CHECK (did > 100), name varchar(40));"
+    echo -e "================\nUSER: $USER\nPASSWORD: $PASSWORD"
+    psql -c "CREATE TABLE entries (did integer CHECK (did > 100), phrase text, state varchar(40));"
+    
     if [ "$USER" == "postgres" ]; then
       echo "ALTER USER :user WITH PASSWORD :'password' ;" | psql --set user=$USER --set password=$PASSWORD
-      if [ "$SCHEMA" != "postgres" ]; then
-        createdb -E $ENCODING -T template0 $SCHEMA
-      fi
     else
       echo "CREATE USER :user WITH SUPERUSER PASSWORD :'password' ;" | psql --set user=$USER --set password=$PASSWORD && createdb -E $ENCODING -T template0 $SCHEMA
     fi
@@ -50,7 +42,6 @@ create_user () {
   fi
 }
 
-crontab -l | { cat; echo "* * * * * postgres psql -c 'INSERT INTO distributors (did, name) VALUES (\'120\', \'kevyn\');'"; } | crontab -
 
 create_user &
 exec /usr/lib/postgresql/9.4/bin/postgres -D /var/lib/postgresql/data -c config_file=/etc/postgresql/9.4/main/postgresql.conf
