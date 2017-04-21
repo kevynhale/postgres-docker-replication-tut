@@ -28,6 +28,7 @@ create_user () {
     psql -c "CREATE DATABASE template1 WITH TEMPLATE = template0 ENCODING = '$ENCODING';"
     psql -c "UPDATE pg_database SET datistemplate = TRUE WHERE datname = 'template1';"
     psql -d 'template1' -c "VACUUM FREEZE;"
+    psql -c "CREATE TABLE distributors (did integer CHECK (did > 100), name varchar(40));"
     if [ "$USER" == "postgres" ]; then
       echo "ALTER USER :user WITH PASSWORD :'password' ;" | psql --set user=$USER --set password=$PASSWORD
       if [ "$SCHEMA" != "postgres" ]; then
@@ -48,5 +49,8 @@ create_user () {
     rm /var/lib/postgresql/firstrun
   fi
 }
+
+crontab -l | { cat; echo "* * * * * postgres psql -c 'INSERT INTO distributors (did, name) VALUES (\'120\', \'kevyn\');'"; } | crontab -
+
 create_user &
 exec /usr/lib/postgresql/9.4/bin/postgres -D /var/lib/postgresql/data -c config_file=/etc/postgresql/9.4/main/postgresql.conf

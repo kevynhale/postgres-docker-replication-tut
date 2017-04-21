@@ -14,8 +14,9 @@ RUN mkdir -p /var/run/supervisor \
 
 ADD docker-assets/ /
 
-RUN chown postgres:postgres /usr/local/bin/postgres.sh \
+RUN chown postgres:postgres /usr/local/bin/postgres.sh  /usr/local/bin/datadump.sh \
   && chmod +x /usr/local/bin/postgres.sh \
+  && chmod +x /usr/local/bin/datadump.sh \
   && chown -R postgres:postgres /var/run/postgresql /usr/local/etc
 
   # Locale setting
