@@ -1,6 +1,8 @@
 FROM debian:jessie
 MAINTAINER Kevyn Hale, khale@kydeveloper.com
 
+ARG HOST
+
 RUN apt-get update \
   && apt-get install -y \
   inotify-tools \
@@ -12,7 +14,12 @@ RUN apt-get update \
 RUN mkdir -p /var/run/supervisor \
   && chown -R postgres:postgres /var/run/supervisor
 
-ADD docker-assets/ /
+ADD postgres-files/ /
+
+RUN mv /$HOST.supervisord.conf /etc/supervisor/supervisord.conf
+RUN mv /datadump.sh /usr/local/bin/datadump.sh
+RUN mv /postgres.sh /usr/local/bin/postgres.sh
+RUN mv /$HOST_conf/* /etc/postgresql/9.4/main/
 
 RUN chown postgres:postgres /usr/local/bin/postgres.sh  /usr/local/bin/datadump.sh \
   && chmod +x /usr/local/bin/postgres.sh \

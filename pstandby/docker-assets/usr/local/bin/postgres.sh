@@ -23,7 +23,6 @@ create_user () {
     echo "Below are your configured options."
     echo -e "================\nUSER: $USER\nPASSWORD: $PASSWORD"
     psql -c "CREATE TABLE entries (did integer CHECK (did > 100), phrase text, state varchar(40));"
-    psql -c "CREATE ROLE replication WITH REPLICATION PASSWORD 'password' LOGIN;"
  
     echo "ALTER USER :user WITH PASSWORD :'password' ;" | psql --set user=$USER --set password=$PASSWORD
 

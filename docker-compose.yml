@@ -1,0 +1,29 @@
+
+version: '2'
+
+services:
+  master:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        HOST: master
+    expose:
+      - 5432
+    links:
+      - standby
+    env_file: ./master.env
+    environment:
+      - HOST=master
+
+  standby:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        HOST: standby
+    expose:
+      - 5432
+    env_file: ./standby.env
+    environment:
+      - HOST=standby
