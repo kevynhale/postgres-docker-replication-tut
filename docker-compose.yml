@@ -15,6 +15,9 @@ services:
     env_file: ./master.env
     environment:
       - HOST=master
+    networks:
+      postgresnet:
+        ipv4_address: 172.25.0.2
 
   standby:
     build: 
@@ -27,3 +30,13 @@ services:
     env_file: ./standby.env
     environment:
       - HOST=standby
+    networks:
+      postgresnet:
+        ipv4_address: 172.25.0.3
+
+networks:
+  postgresnet:
+    driver: bridge
+    ipam:
+      config:
+      - subnet: 172.25.0.0/24

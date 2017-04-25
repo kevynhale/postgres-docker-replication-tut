@@ -1,7 +1,8 @@
 FROM debian:jessie
 MAINTAINER Kevyn Hale, khale@kydeveloper.com
 
-ARG HOST
+#HOST used to differentiate from master and standby set in docker-compose
+ARG HOST 
 
 RUN apt-get update \
   && apt-get install -y \
@@ -16,6 +17,7 @@ RUN mkdir -p /var/run/supervisor \
 
 ADD postgres-files/ /
 
+# Set up files based on HOST
 RUN mv /$HOST.supervisord.conf /etc/supervisor/supervisord.conf
 RUN mv /datadump.sh /usr/local/bin/datadump.sh
 RUN mv /postgres.sh /usr/local/bin/postgres.sh
@@ -36,7 +38,7 @@ ENV PASSWORD postgres
 RUN echo "listen_addresses='*'" >> /etc/postgresql/9.4/main/postgresql.conf \
   && echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.4/main/pg_hba.conf
 
-#VOLUME	["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql", "/var/backups"]
+VOLUME	["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql", "/var/backups"]
 
 RUN touch /var/lib/postgresql/firstrun && chmod 666 /var/lib/postgresql/firstrun
 
