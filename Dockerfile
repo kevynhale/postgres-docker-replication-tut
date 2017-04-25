@@ -19,7 +19,7 @@ ADD postgres-files/ /
 RUN mv /$HOST.supervisord.conf /etc/supervisor/supervisord.conf
 RUN mv /datadump.sh /usr/local/bin/datadump.sh
 RUN mv /postgres.sh /usr/local/bin/postgres.sh
-RUN mv /$HOST_conf/* /etc/postgresql/9.4/main/
+RUN mv /$HOST-conf/* /etc/postgresql/9.4/main/
 
 RUN chown postgres:postgres /usr/local/bin/postgres.sh  /usr/local/bin/datadump.sh \
   && chmod +x /usr/local/bin/postgres.sh \
@@ -36,7 +36,7 @@ ENV PASSWORD postgres
 RUN echo "listen_addresses='*'" >> /etc/postgresql/9.4/main/postgresql.conf \
   && echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.4/main/pg_hba.conf
 
-VOLUME	["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql", "/var/backups"]
+#VOLUME	["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql", "/var/backups"]
 
 RUN touch /var/lib/postgresql/firstrun && chmod 666 /var/lib/postgresql/firstrun
 
