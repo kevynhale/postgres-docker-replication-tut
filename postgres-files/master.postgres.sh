@@ -3,6 +3,9 @@
 # Create postgres data directory and run initdb if needed
 # This is useful for docker volumes
 if [ ! -e /var/lib/postgresql/9.4/main ]; then
+    mv /master-conf/* /etc/postgresql/9.4/main/
+    STANDBY=$(getent hosts master | awk '{print $1}')
+    echo "host replication replication $STANDBY/32 md5" >> /etc/postgres/9.4/main/pg_hba.conf
     echo "Creating data directory"
     mkdir -p /var/lib/postgresql/9.4/main
     touch /var/lib/postgresql/firstrun
@@ -20,12 +23,17 @@ create_user () {
 
     # We sleep here for 2 seconds to allow clean output, and speration from postgres startup messages
     sleep 2
-    echo "Below are your configured options."
-    echo -e "================\nUSER: $USER\nPASSWORD: $PASSWORD"
+
+    cat << EOF
+    Below are your configured options.
+    ==================================
+    USER: $USER
+    PASSWORD: $PASSWORD
+EOF
+
     psql -c "CREATE TABLE entries (did integer CHECK (did > 100), phrase text, state varchar(40));"
     psql -c "CREATE ROLE replication WITH REPLICATION PASSWORD 'password' LOGIN;"
- 
-    echo "ALTER USER :user WITH PASSWORD :'password' ;" | psql --set user=$USER --set password=$PASSWORD
+    psql --set user=$USER --set password=$PASSWORD
 
     rm /var/lib/postgresql/firstrun
   fi
@@ -33,4 +41,4 @@ create_user () {
 
 
 create_user &
-exec /usr/lib/postgresql/9.4/bin/postgres -D /var/lib/postgresql/data -c config_file=/etc/postgresql/9.4/main/postgresql.conf
+exec /etc/init.d/postgresql start

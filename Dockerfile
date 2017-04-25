@@ -10,6 +10,9 @@ RUN apt-get update \
   postgresql-9.4 \
   postgresql-client-9.4 \
   supervisor \
+  ngrep \
+  net-tools \
+  vim \
   && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /var/run/supervisor \
@@ -20,13 +23,14 @@ ADD postgres-files/ /
 # Set up files based on HOST
 RUN mv /$HOST.supervisord.conf /etc/supervisor/supervisord.conf
 RUN mv /datadump.sh /usr/local/bin/datadump.sh
-RUN mv /postgres.sh /usr/local/bin/postgres.sh
-RUN mv /$HOST-conf/* /etc/postgresql/9.4/main/
+RUN mv /$HOST.postgres.sh /usr/local/bin/postgres.sh
 
-RUN chown postgres:postgres /usr/local/bin/postgres.sh  /usr/local/bin/datadump.sh \
+RUN mkdir -p /var/wal
+
+RUN chown postgres:postgres /usr/local/bin/postgres.sh  /usr/local/bin/datadump.sh  \
   && chmod +x /usr/local/bin/postgres.sh \
   && chmod +x /usr/local/bin/datadump.sh \
-  && chown -R postgres:postgres /var/run/postgresql /usr/local/etc
+  && chown -R postgres:postgres /var/run/postgresql /usr/local/etc /var/wal /$HOST-conf
 
   # Locale setting
 ENV LOCALE en_US.UTF-8
@@ -35,10 +39,7 @@ ENV LOCALE en_US.UTF-8
 ENV USER postgres
 ENV PASSWORD postgres
 
-RUN echo "listen_addresses='*'" >> /etc/postgresql/9.4/main/postgresql.conf \
-  && echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.4/main/pg_hba.conf
-
-VOLUME	["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql", "/var/backups"]
+VOLUME	["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql", "/var/wal"]
 
 RUN touch /var/lib/postgresql/firstrun && chmod 666 /var/lib/postgresql/firstrun
 
