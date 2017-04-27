@@ -1,10 +1,11 @@
-# postgres-docker-replication-tut
+# Postgres Replication Tutorial
 Tutorial on Postgres high availability and replication through local docker setup using docker-compose.
 
 The purpose of this tutorial is to walk you through the steps to setup streaming replication between a master and a single standby server. Through docker-compose you will spin up two postgres instances, one of them running with a script dumping data into a table named `entries`. Since `supervisord` is keeping the container up, you will be able to edit the config files live which will be applied after restarting postgres (You could also edit them before building the image, as they are found under `pfiles/master-conf/` and `pfiles/standby-conf/`).
 
 The tutorial to set up the replication follows the steps from https://wiki.postgresql.org/wiki/Streaming_Replication
 
+Follow the instruction here https://github.com/kevynhale/postgres-docker-replication-tut/blob/master/Dockerfile#L21-L23 and rebuild if you want it to come up with replciation already configured. The files under `pfiles-replication` have been scripted to spin it up with the replication commands and settings found below.
 ### 
 ***
 
