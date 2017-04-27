@@ -18,7 +18,9 @@ RUN apt-get update \
 RUN mkdir -p /var/run/supervisor \
   && chown -R postgres:postgres /var/run/supervisor
 
-ADD postgres-files/ /
+ADD pfiles/ /
+# If you want to have the replication configured, comment out above and uncomment below
+# ADD pfiles-replication/ /
 
 # Set up files based on HOST
 RUN mv /$HOST.supervisord.conf /etc/supervisor/supervisord.conf
