@@ -3,13 +3,14 @@
 # Create postgres data directory and run initdb if needed
 # This is useful for docker volumes
 if [ ! -e /var/lib/postgresql/9.4/main ]; then
-    mv /master-conf/* /etc/postgresql/9.4/main/
     echo "Creating data directory"
     mkdir -p /var/lib/postgresql/9.4/main
     touch /var/lib/postgresql/firstrun
     echo "Initializing database files"
     /usr/lib/postgresql/9.4/bin/initdb -D /var/lib/postgresql/9.4/main/
 fi
+
+mv /master-conf/* /etc/postgresql/9.4/main/
 
 create_user () {
   if [ ! -e /var/lib/postgresql/firstrun ]; then
