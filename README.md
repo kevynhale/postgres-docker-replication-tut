@@ -123,3 +123,4 @@ psql
 ```
 The number being returned will be incrementing of replication is working. Any change made to master will affect the standby. Now you have a cluster up and running that you can experiment on!
 
+To spin down the containers simply run `docker-compose down`.
